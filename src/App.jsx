@@ -107,8 +107,8 @@ const App = () => {
     hideLandingPage();
   };
 
-  // Show Landing Page for first-time users
-  if (showLandingPage) {
+  // Show Landing Page for first-time users (only on root path)
+  if (showLandingPage && location.pathname === '/') {
     return <LandingPage onGetStarted={handleGetStarted} language={language} t={t} />;
   }
 
