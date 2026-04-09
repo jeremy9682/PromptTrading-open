@@ -1,15 +1,10 @@
 import { UnifiedMarketEvent, MarketOutcome } from '../types';
 
-// 获取 API 基础 URL
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3002/api';
-// @ts-ignore - Vite 环境变量类型定义问题
-const isDev = import.meta.env.DEV;
-
-// 开发环境: /gamma-api 通过 Vite 代理到 https://gamma-api.polymarket.com
-// 生产环境: 通过后端代理 /api/polymarket/gamma-api 避免 CORS 问题
-const POLY_API_URL = isDev ? '/gamma-api' : `${API_BASE_URL}/polymarket/gamma-api`;
-// CLOB API 支持按 condition_id 精确查询（Gamma API 的 condition_id 参数无效）
-const CLOB_API_URL = isDev ? '/clob-api' : `${API_BASE_URL}/polymarket/clob-api`;
+// Polymarket public API URLs
+// Both dev (Vite proxy) and production (Vercel rewrites in vercel.json)
+// serve /gamma-api and /clob-api, so no backend proxy is needed.
+const POLY_API_URL = '/gamma-api';
+const CLOB_API_URL = '/clob-api';
 
 interface PolyToken {
   token_id: string;
