@@ -9,6 +9,7 @@
 </p>
 
 <p align="center">
+  <a href="https://prompttrading-open-a95p5ou6f-lj5.vercel.app"><b>Live Demo</b></a> &middot;
   <a href="#quick-start">Quick Start</a> &middot;
   <a href="#features">Features</a> &middot;
   <a href="#architecture">Architecture</a> &middot;
