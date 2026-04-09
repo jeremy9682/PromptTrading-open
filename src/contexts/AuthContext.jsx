@@ -27,9 +27,52 @@ import {
 
 const AuthContext = createContext(null);
 
+const DEMO_MODE = !import.meta.env.VITE_PRIVY_APP_ID;
+
+const demoAuthValue = {
+  ready: true,
+  authenticated: false,
+  user: null,
+  login: () => console.warn('Demo mode: wallet login disabled'),
+  logout: () => {},
+  isLoading: false,
+  primaryWallet: null,
+  embeddedWalletAddress: null,
+  walletsReady: false,
+  wallets: [],
+  solanaWallets: [],
+  isEmbeddedWallet: false,
+  effectiveChainId: null,
+  agentWallet: null,
+  isAgentActive: false,
+  agentInfo: null,
+  getAccessToken: async () => null,
+  getProvider: async () => null,
+  switchChain: async () => {},
+  signMessage: async () => null,
+  signTypedData: async () => null,
+  signWithPrivyWallet: async () => null,
+  exportWalletPrivateKey: async () => {},
+  getEthersSigner: async () => null,
+  createAgent: async () => {},
+  revokeAgent: async () => {},
+  revokeAgentByName: async () => {},
+  getAgentKey: async () => null,
+  loadExistingAgent: async () => {},
+  linkEmail: () => {},
+  linkGoogle: () => {},
+  linkApple: () => {},
+  linkWallet: () => {},
+  unlinkEmail: () => {},
+  unlinkGoogle: () => {},
+  unlinkApple: () => {},
+  unlinkWallet: () => {},
+};
+
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
+    if (DEMO_MODE) return demoAuthValue;
     throw new Error('useAuth must be used within AuthProvider');
   }
   return context;
@@ -40,6 +83,15 @@ export const useAuth = () => {
  * Manages authentication state and syncs with Zustand store
  */
 export const AuthProvider = ({ children }) => {
+  // Demo mode: provide stub context without Privy
+  if (DEMO_MODE) {
+    return <AuthContext.Provider value={demoAuthValue}>{children}</AuthContext.Provider>;
+  }
+
+  return <AuthProviderInner>{children}</AuthProviderInner>;
+};
+
+const AuthProviderInner = ({ children }) => {
   const {
     ready,
     authenticated,

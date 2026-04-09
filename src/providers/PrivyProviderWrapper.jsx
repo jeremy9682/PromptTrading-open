@@ -39,10 +39,15 @@ const SOLANA_RPC_URL = import.meta.env.VITE_SOLANA_RPC_URL || 'https://solana-rp
 const SOLANA_WS_URL = SOLANA_RPC_URL.replace('https://', 'wss://').replace('http://', 'ws://');
 
 if (!PRIVY_APP_ID) {
-  console.error('Missing VITE_PRIVY_APP_ID in environment variables');
+  console.warn('Missing VITE_PRIVY_APP_ID — wallet features disabled (demo mode)');
 }
 
 export const PrivyProviderWrapper = ({ children }) => {
+  // Demo mode: skip Privy entirely when no App ID is configured
+  if (!PRIVY_APP_ID) {
+    return <>{children}</>;
+  }
+
   return (
     <PrivyProvider
       appId={PRIVY_APP_ID}
