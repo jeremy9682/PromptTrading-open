@@ -4,6 +4,8 @@ import { usePolymarketStore } from '../../contexts/usePolymarketStore';
 import { Loader2 } from 'lucide-react';
 import { QuotaAlertDialog } from './QuotaAlertDialog';
 
+const DEMO_MODE = !import.meta.env.VITE_PRIVY_APP_ID;
+
 interface PolymarketLayoutProps {
   children: React.ReactNode;
 }
@@ -13,6 +15,15 @@ interface PolymarketLayoutProps {
  * 处理用户认证和数据初始化
  */
 export function PolymarketLayout({ children }: PolymarketLayoutProps) {
+  // Demo mode: skip Privy auth, render children directly
+  if (DEMO_MODE) {
+    return <>{children}<QuotaAlertDialog /></>;
+  }
+
+  return <PolymarketLayoutAuth>{children}</PolymarketLayoutAuth>;
+}
+
+function PolymarketLayoutAuth({ children }: PolymarketLayoutProps) {
   const { authenticated, user, ready, getAccessToken } = usePrivy();
   const initialize = usePolymarketStore(state => state.initialize);
   const clearAuth = usePolymarketStore(state => state.clearAuth);
