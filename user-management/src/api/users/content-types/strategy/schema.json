@@ -1,0 +1,67 @@
+{
+	"collectionName": "extend_strategies",
+	"info": {
+		"singularName": "strategy",
+		"pluralName": "strategies",
+		"displayName": "Strategy"
+	},
+	"options": {
+		"draftAndPublish": false
+	},
+	"attributes": {
+		"user": {
+			"type": "relation",
+			"relation": "manyToOne",
+			"target": "plugin::users-permissions.user",
+			"required": true
+		},
+
+		"strategy_name": {
+			"type": "string",
+			"required": true,
+			"maxLength": 100
+		},
+
+		"strategy_code": {
+			"type": "text",
+			"required": true
+		},
+
+		"parameters": {
+			"type": "json",
+			"default": {}
+		},
+
+		"ai_model_used": {
+			"type": "string",
+			"maxLength": 50
+		},
+
+		"prompt_used": {
+			"type": "text"
+		},
+
+		"backtest_result": {
+			"type": "json"
+		},
+
+		"status": {
+			"type": "enumeration",
+			"enum": ["draft", "active", "stopped", "archived"],
+			"default": "draft"
+		},
+
+		"activated_at": {
+			"type": "datetime"
+		},
+
+		"stopped_at": {
+			"type": "datetime"
+		},
+
+		"performance": {
+			"type": "json",
+			"default": {}
+		}
+	}
+}

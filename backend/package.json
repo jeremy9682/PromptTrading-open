@@ -1,0 +1,40 @@
+{
+  "name": "prompttrading-backend",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "src/server.js",
+  "scripts": {
+    "dev": "nodemon src/server.js",
+    "start": "node src/server.js",
+    "prisma:generate": "prisma generate",
+    "test": "echo \"No public backend test suite included in the sanitized open-source snapshot.\""
+  },
+  "dependencies": {
+    "@aws-sdk/client-secrets-manager": "^3.939.0",
+    "@ethersproject/contracts": "^5.8.0",
+    "@ethersproject/signing-key": "^5.8.0",
+    "@ethersproject/transactions": "^5.8.0",
+    "@polymarket/builder-relayer-client": "^0.0.7",
+    "@polymarket/builder-signing-sdk": "^0.0.8",
+    "@polymarket/clob-client": "^5.0.0",
+    "@prisma/client": "^6.19.0",
+    "@privy-io/server-auth": "^1.32.5",
+    "@solana/web3.js": "^1.98.4",
+    "axios": "^1.4.0",
+    "compression": "^1.8.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
+    "ethers": "^5.8.0",
+    "express": "^4.18.2",
+    "hyperliquid": "^1.7.7",
+    "node-cron": "^4.2.1",
+    "prisma": "^6.19.0",
+    "technicalindicators": "^3.1.0",
+    "viem": "^2.41.2",
+    "ws": "^8.18.3",
+    "xml2js": "^0.6.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+}

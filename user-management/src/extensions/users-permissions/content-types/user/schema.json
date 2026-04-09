@@ -1,0 +1,100 @@
+{
+	"collectionName": "up_users",
+	"info": {
+		"singularName": "user",
+		"pluralName": "users",
+		"displayName": "User"
+	},
+	"options": {
+		"draftAndPublish": false
+	},
+	"pluginOptions": {
+		"users-permissions": {
+			"config": {
+				"restrictRelationsToRoles": true
+			}
+		}
+	},
+	"attributes": {
+		"avatar": {
+			"type": "media",
+			"multiple": false,
+			"required": false,
+			"allowedTypes": ["images"]
+		},
+		"wallet_address": {
+			"type": "string",
+			"required": true,
+			"unique": true
+		},
+		"email": {
+			"type": "string",
+			"required": false,
+			"unique": true
+		},
+		"last_login_at": {
+			"type": "datetime"
+		},
+		"status": {
+			"type": "enumeration",
+			"enum": ["active", "suspended", "deleted"],
+			"default": "active"
+		},
+		"free_credits_used": {
+			"type": "integer",
+			"default": 0
+		},
+		"free_credits_total": {
+			"type": "integer",
+			"default": 5
+		},
+		"paid_credits": {
+			"type": "integer",
+			"default": 0
+		},
+		"subscription_tier": {
+			"type": "enumeration",
+			"enum": ["free", "basic", "pro", "premium"],
+			"default": "free"
+		},
+		"subscription_expires_at": {
+			"type": "datetime"
+		},
+		"custom_api_key_encrypted": {
+			"type": "text"
+		},
+		"hyperliquid_agent_address": {
+			"type": "string",
+			"maxLength": 42
+		},
+		"hyperliquid_agent_key_encrypted": {
+			"type": "text"
+		},
+		"hyperliquid_binding_status": {
+			"type": "enumeration",
+			"enum": ["pending", "active", "disabled"],
+			"default": "pending"
+		},
+		"hyperliquid_balance_cache": {
+			"type": "decimal",
+			"default": 0,
+			"precision": 18,
+			"scale": 6
+		},
+		"hyperliquid_binding_at": {
+			"type": "datetime"
+		},
+		"profile_data": {
+			"type": "json",
+			"default": {}
+		},
+		"preferences": {
+			"type": "json",
+			"default": {}
+		},
+		"metadata": {
+			"type": "json",
+			"default": {}
+		}
+	}
+}

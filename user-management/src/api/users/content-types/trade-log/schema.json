@@ -1,0 +1,71 @@
+{
+	"collectionName": "extend_trade_logs",
+	"info": {
+		"singularName": "trade-log",
+		"pluralName": "trade-logs",
+		"displayName": "Trade Log"
+	},
+	"options": {
+		"draftAndPublish": false
+	},
+	"attributes": {
+		"user": {
+			"type": "relation",
+			"relation": "manyToOne",
+			"target": "plugin::users-permissions.user",
+			"required": true
+		},
+
+		"strategy": {
+			"type": "relation",
+			"relation": "manyToOne",
+			"target": "api::users.strategy"
+		},
+
+		"coin": {
+			"type": "string",
+			"required": true,
+			"maxLength": 20
+		},
+
+		"side": {
+			"type": "enumeration",
+			"enum": ["buy", "sell"],
+			"required": true
+		},
+
+		"order_type": {
+			"type": "enumeration",
+			"enum": ["market", "limit"],
+			"required": true
+		},
+
+		"price": {
+			"type": "decimal",
+			"required": true
+		},
+
+		"size": {
+			"type": "decimal",
+			"required": true
+		},
+
+		"pnl": {
+			"type": "decimal"
+		},
+
+		"fee": {
+			"type": "decimal"
+		},
+
+		"hyperliquid_order_id": {
+			"type": "string",
+			"maxLength": 100
+		},
+
+		"metadata": {
+			"type": "json",
+			"default": {}
+		}
+	}
+}

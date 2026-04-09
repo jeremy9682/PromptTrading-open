@@ -1,0 +1,310 @@
+{
+  "title": "Newbie Academy | One-Stop Analysis + Execution",
+  "hero": {
+    "headline": "From zero to your first DeFi perpetual trade in 30 minutes",
+    "subheading": "One-stop analysis + execution: connect wallet, pick market, risk-manage, submit",
+    "ctas": [
+      { "label": "Connect Wallet", "type": "internal", "target": "WalletTab" },
+      { "label": "Open Trading Panel", "type": "internal", "target": "TradingDashboardTab" }
+    ]
+  },
+  "toc": [
+    { "id": "quickstart", "title": "Quick Start" },
+    { "id": "metamask-install", "title": "Install MetaMask" },
+    { "id": "connect-site", "title": "Sign in to this app with MetaMask" },
+    { "id": "hyperliquid-login", "title": "Sign in to Hyperliquid with MetaMask" },
+    { "id": "funding", "title": "Funds & Network" },
+    { "id": "first-trade", "title": "Your First Trade" },
+    { "id": "risk", "title": "Risk Management" },
+    { "id": "faq", "title": "FAQ" },
+    { "id": "glossary", "title": "Glossary" },
+    { "id": "troubleshooting", "title": "Troubleshooting" },
+    { "id": "further-reading", "title": "Further Reading: DeFi Basics" }
+  ],
+  "sections": [
+    {
+      "id": "quickstart",
+      "title": "Quick Start",
+      "type": "steps",
+      "content": [
+        {
+          "kind": "step",
+          "title": "Prepare MetaMask",
+          "items": [
+            "Use MetaMask only (desktop: browser extension; mobile: use MetaMask app's in-app browser to open this app)",
+            "Create a fresh address for practice; avoid mixing with main funds",
+            "Back up seed phrase securely and offline"
+          ]
+        },
+        {
+          "kind": "step",
+          "title": "Connect your wallet",
+          "items": [
+            "Click ‘Connect Wallet’ on the top-right or the button below",
+            "Authorize read-only access and message signing"
+          ],
+          "cta": { "label": "Connect Wallet", "type": "internal", "target": "WalletTab" }
+        },
+        {
+          "kind": "step",
+          "title": "Prepare funds & network",
+          "items": [
+            "Perpetuals on Hyperliquid require available balance in your account",
+            "If coming from CEX/on-chain, see next section for funding paths"
+          ]
+        },
+        {
+          "kind": "step",
+          "title": "One-stop analysis + execution",
+          "items": [
+            "Pick a market (e.g., BTC, ETH)",
+            "Set position size and leverage, configure stop-loss/take-profit",
+            "Confirm; wallet signs and transaction is sent automatically"
+          ],
+          "cta": { "label": "Open Trading Panel", "type": "internal", "target": "TradingDashboardTab" }
+        },
+        {
+          "kind": "callout",
+          "tone": "info",
+          "title": "Time budget",
+          "text": "Expect 15–30 minutes end-to-end for the first run; faster thereafter."
+        }
+      ]
+    },
+    {
+      "id": "metamask-install",
+      "title": "Install MetaMask",
+      "type": "content",
+      "content": [
+        { "kind": "paragraph", "text": "This app supports MetaMask only. On desktop, use the browser extension; on mobile, open this app inside the MetaMask in-app browser to connect." },
+        { "kind": "list", "title": "Desktop (Chrome/Brave/Edge)", "items": [
+          "Install MetaMask from your browser's extension store",
+          "Pin the extension, then create/import wallet",
+          "Write down the seed phrase offline and set a strong password"
+        ]},
+        { "kind": "list", "title": "Mobile (iOS/Android)", "items": [
+          "Install MetaMask from App Store/Google Play",
+          "Open MetaMask and use its in-app browser",
+          "Open this app's URL inside the in-app browser to connect"
+        ]},
+        { "kind": "callout", "tone": "warning", "title": "Security", "text": "Never enter your seed/private key into any website. This app will never ask for them." }
+      ]
+    },
+    {
+      "id": "connect-site",
+      "title": "Sign in to this app with MetaMask",
+      "type": "content",
+      "content": [
+        { "kind": "paragraph", "text": "We only read your public address and request signatures after you authorize. We do not initiate fund transfers." },
+        { "kind": "step", "title": "Desktop", "items": [
+          "Open this app and click ‘Connect Wallet’",
+          "Select MetaMask in wallet popup and approve",
+          "If a signature is requested to verify ownership, follow the prompt"
+        ]},
+        { "kind": "step", "title": "Mobile", "items": [
+          "Open this app via MetaMask's in-app browser",
+          "Tap ‘Connect Wallet’ and approve within MetaMask",
+          "Complete any required signature prompts"
+        ]},
+        { "kind": "cta", "label": "Connect Wallet", "type": "internal", "target": "WalletTab" }
+      ]
+    },
+    {
+      "id": "hyperliquid-login",
+      "title": "Sign in to Hyperliquid with MetaMask",
+      "type": "content",
+      "content": [
+        { "kind": "paragraph", "text": "Before trading, complete account connection/registration on Hyperliquid." },
+        { "kind": "step", "title": "Steps", "items": [
+          "On desktop, visit https://app.hyperliquid.xyz on mobile, use MetaMask's in-app browser",
+          "Click ‘Connect Wallet’ and choose MetaMask",
+          "Approve connection and required signature in MetaMask",
+          "On first time, follow prompts to complete registration (e.g., set a username)"
+        ]},
+        { "kind": "callout", "tone": "info", "title": "Note", "text": "After Hyperliquid setup, return to our Trading Panel to place orders." }
+      ]
+    },
+    {
+      "id": "funding",
+      "title": "Funds & Network",
+      "type": "content",
+      "content": [
+        {
+          "kind": "paragraph",
+          "text": "To trade perpetuals on Hyperliquid, ensure your account has tradable balance. Common funding paths:" 
+        },
+        {
+          "kind": "list",
+          "title": "Common funding paths",
+          "items": [
+            "Withdraw from a CEX to your on-chain wallet",
+            "Bridge assets to the target network/account",
+            "Swap into the margin asset required (e.g., USDC)"
+          ]
+        },
+        {
+          "kind": "callout",
+          "tone": "info",
+          "title": "Start small",
+          "text": "Begin with a small amount to validate the flow, then scale up."
+        }
+      ]
+    },
+    {
+      "id": "first-trade",
+      "title": "Your First Trade",
+      "type": "steps",
+      "content": [
+        {
+          "kind": "step",
+          "title": "Pick a market",
+          "items": [
+            "Choose a perpetual market (e.g., BTC-PERP)",
+            "Review price, funding rate, 24h change, and basics"
+          ]
+        },
+        {
+          "kind": "step",
+          "title": "Set size and leverage",
+          "items": [
+            "Enter quantity or notional and choose leverage",
+            "System estimates required margin and liquidation price"
+          ]
+        },
+        {
+          "kind": "step",
+          "title": "Configure risk (recommended)",
+          "items": [
+            "Set stop-loss to cap max loss",
+            "Set take-profit to secure targets",
+            "Prioritize risk parameters over return expectations"
+          ]
+        },
+        {
+          "kind": "step",
+          "title": "Confirm & sign",
+          "items": [
+            "Review order summary and submit",
+            "Wallet prompts signature; upon confirm, transaction is sent"
+          ]
+        },
+        {
+          "kind": "callout",
+          "tone": "success",
+          "title": "Congrats!",
+          "text": "Your first perpetual order has been submitted. Track positions and orders, and adjust SL/TP anytime."
+        }
+      ]
+    },
+    {
+      "id": "risk",
+      "title": "Risk Management",
+      "type": "content",
+      "content": [
+        {
+          "kind": "paragraph",
+          "text": "Leverage amplifies both returns and losses. Trade only with funds you can afford to lose, and enforce risk controls."
+        },
+        {
+          "kind": "list",
+          "title": "Core principles",
+          "items": [
+            "Risk per trade ≤ 1–2% of available capital",
+            "Keep total leverage exposure controlled, especially in high volatility",
+            "Always place and respect stop-loss; avoid ‘averaging down’"
+          ]
+        },
+        {
+          "kind": "list",
+          "title": "Common tools",
+          "items": [
+            "Stop-loss: auto close when trigger price hits",
+            "Take-profit: auto realize gains at targets",
+            "Scale-out: reduce size into strength to lock in profits"
+          ]
+        }
+      ]
+    }
+  ],
+  "faq": [
+    {
+      "q": "Why do I need to sign? Can it drain my funds?",
+      "a": "On-chain operations require wallet signatures to authorize. Signing doesn’t reveal your private key or auto-transfer funds. Only sign on trusted sites for clear intents."
+    },
+    {
+      "q": "What’s the minimum to start?",
+      "a": "Start with a small, acceptable loss amount (e.g., $50–$200) to validate the flow and build risk habits."
+    },
+    {
+      "q": "What is funding rate?",
+      "a": "Perpetuals use periodic payments between longs and shorts to anchor to spot. Positive rate: longs pay shorts; negative: shorts pay longs."
+    },
+    {
+      "q": "How is liquidation price determined?",
+      "a": "It depends on price, leverage, margin, and platform rules. Higher leverage and lower margin move it closer to mark price; we show an estimate before placing."
+    }
+  ],
+  "glossary": [
+    { "term": "Wallet", "def": "Tool managing private keys and addresses, used for signing and transactions." },
+    { "term": "Seed Phrase", "def": "Word sequence to recover a wallet. Store offline securely." },
+    { "term": "Perpetual", "def": "No-expiry derivative anchored via funding payments." },
+    { "term": "Leverage", "def": "Multiplier increasing notional exposure and risk." },
+    { "term": "Margin", "def": "Collateral supporting position risk." },
+    { "term": "Liquidation", "def": "Forced close when margin is insufficient." },
+    { "term": "Funding", "def": "Periodic payments between longs and shorts to anchor price." }
+  ],
+  "troubleshooting": [
+    {
+      "issue": "Cannot connect wallet / no signature popup",
+      "fix": [
+        "Ensure wallet extension installed and unlocked",
+        "Refresh page or restart browser",
+        "Check popup/script blockers (privacy settings or extensions)"
+      ]
+    },
+    {
+      "issue": "Order failed or pending too long",
+      "fix": [
+        "Check network status and fees; retry later if congested",
+        "Verify sufficient available balance",
+        "Reduce leverage or order size and try again"
+      ]
+    },
+    {
+      "issue": "Balance or position mismatch",
+      "fix": [
+        "Click refresh and wait for sync",
+        "Cross-device login may cause cache delays",
+        "If persists, contact us with tx hash"
+      ]
+    }
+  ],
+  "furtherReading": [
+    {
+      "title": "DeFi essentials: wallets, networks, assets",
+      "bullets": [
+        "Private key = ownership; addresses derive from keys",
+        "Mainnets vs L2s",
+        "How to store seed phrases safely"
+      ]
+    },
+    {
+      "title": "AMMs and liquidity",
+      "bullets": [
+        "Constant product (x*y=k) intuition",
+        "Slippage and price impact",
+        "LP returns and impermanent loss"
+      ]
+    },
+    {
+      "title": "Lending and leverage",
+      "bullets": [
+        "Collateral, liquidation, and rate curves",
+        "Leverage risks and management",
+        "Diversification and the role of stop-loss"
+      ]
+    }
+  ]
+}
+
+

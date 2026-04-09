@@ -1,0 +1,66 @@
+{
+	"collectionName": "extend_notifications",
+	"info": {
+		"singularName": "notification",
+		"pluralName": "notifications",
+		"displayName": "Notification"
+	},
+	"options": {
+		"draftAndPublish": false
+	},
+	"attributes": {
+		"user": {
+			"type": "relation",
+			"relation": "manyToOne",
+			"target": "plugin::users-permissions.user",
+			"required": true
+		},
+
+		"type": {
+			"type": "enumeration",
+			"enum": ["error", "warning", "info", "success"],
+			"required": true
+		},
+
+		"category": {
+			"type": "enumeration",
+			"enum": ["strategy", "account", "system", "marketing"],
+			"required": true
+		},
+
+		"title": {
+			"type": "string",
+			"required": true,
+			"maxLength": 200
+		},
+
+		"message": {
+			"type": "text",
+			"required": true
+		},
+
+		"is_read": {
+			"type": "boolean",
+			"default": false
+		},
+
+		"priority": {
+			"type": "enumeration",
+			"enum": ["low", "normal", "high", "critical"],
+			"default": "normal"
+		},
+
+		"action_url": {
+			"type": "string"
+		},
+
+		"read_at": {
+			"type": "datetime"
+		},
+
+		"metadata": {
+			"type": "json",
+			"default": {}
+		}
+	}
+}

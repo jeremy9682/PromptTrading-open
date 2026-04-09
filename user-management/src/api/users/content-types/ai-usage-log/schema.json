@@ -1,0 +1,69 @@
+{
+	"collectionName": "extend_ai_usage_logs",
+	"info": {
+		"singularName": "ai-usage-log",
+		"pluralName": "ai-usage-logs",
+		"displayName": "AI Usage Log"
+	},
+	"options": {
+		"draftAndPublish": false
+	},
+	"attributes": {
+		"user": {
+			"type": "relation",
+			"relation": "manyToOne",
+			"target": "plugin::users-permissions.user",
+			"required": true
+		},
+
+		"model_name": {
+			"type": "string",
+			"required": true,
+			"maxLength": 50
+		},
+
+		"prompt_tokens": {
+			"type": "integer",
+			"default": 0
+		},
+
+		"completion_tokens": {
+			"type": "integer",
+			"default": 0
+		},
+
+		"total_tokens": {
+			"type": "integer",
+			"default": 0
+		},
+
+		"cost_usd": {
+			"type": "decimal",
+			"default": 0
+		},
+
+		"credits_used": {
+			"type": "integer",
+			"default": 1
+		},
+
+		"request_type": {
+			"type": "string",
+			"maxLength": 50
+		},
+
+		"success": {
+			"type": "boolean",
+			"default": true
+		},
+
+		"error_message": {
+			"type": "text"
+		},
+
+		"metadata": {
+			"type": "json",
+			"default": {}
+		}
+	}
+}

@@ -1,0 +1,50 @@
+{
+	"collectionName": "extend_sessions",
+	"info": {
+		"singularName": "session",
+		"pluralName": "sessions",
+		"displayName": "Session"
+	},
+	"options": {
+		"draftAndPublish": false
+	},
+	"attributes": {
+		"user": {
+			"type": "relation",
+			"relation": "manyToOne",
+			"target": "plugin::users-permissions.user",
+			"required": true
+		},
+
+		"token_hash": {
+			"type": "string",
+			"required": true,
+			"minLength": 64,
+			"maxLength": 64
+		},
+
+		"refresh_token": {
+			"type": "string",
+			"maxLength": 255
+		},
+
+		"expires_at": {
+			"type": "datetime",
+			"required": true
+		},
+
+		"ip_address": {
+			"type": "string",
+			"maxLength": 45
+		},
+
+		"user_agent": {
+			"type": "text"
+		},
+
+		"is_active": {
+			"type": "boolean",
+			"default": true
+		}
+	}
+}

@@ -1,0 +1,71 @@
+{
+	"collectionName": "extend_payments",
+	"info": {
+		"singularName": "payment",
+		"pluralName": "payments",
+		"displayName": "Payment"
+	},
+	"options": {
+		"draftAndPublish": false
+	},
+	"attributes": {
+		"user": {
+			"type": "relation",
+			"relation": "manyToOne",
+			"target": "plugin::users-permissions.user",
+			"required": true
+		},
+
+		"amount": {
+			"type": "decimal",
+			"required": true
+		},
+
+		"currency": {
+			"type": "string",
+			"default": "USD",
+			"maxLength": 10
+		},
+
+		"payment_method": {
+			"type": "string",
+			"required": true,
+			"maxLength": 50
+		},
+
+		"transaction_hash": {
+			"type": "string",
+			"maxLength": 66
+		},
+
+		"stripe_payment_id": {
+			"type": "string",
+			"maxLength": 100
+		},
+
+		"status": {
+			"type": "enumeration",
+			"enum": ["pending", "completed", "failed"],
+			"default": "pending"
+		},
+
+		"credits_added": {
+			"type": "integer",
+			"default": 0
+		},
+
+		"subscription_months": {
+			"type": "integer",
+			"default": 0
+		},
+
+		"completed_at": {
+			"type": "datetime"
+		},
+
+		"metadata": {
+			"type": "json",
+			"default": {}
+		}
+	}
+}

@@ -1,0 +1,310 @@
+{
+  "title": "新手学院 | 一站式分析 + 执行",
+  "hero": {
+    "headline": "零基础，30 分钟完成你的第一笔 DeFi 永续交易",
+    "subheading": "傻瓜式一站分析 + 执行：连接钱包、选择标的、风控下单，一条龙搞定",
+    "ctas": [
+      { "label": "去连接钱包", "type": "internal", "target": "WalletTab" },
+      { "label": "开始实盘演练", "type": "internal", "target": "TradingDashboardTab" }
+    ]
+  },
+  "toc": [
+    { "id": "quickstart", "title": "快速开始" },
+    { "id": "metamask-install", "title": "安装 MetaMask" },
+    { "id": "connect-site", "title": "用 MetaMask 登录本项目" },
+    { "id": "hyperliquid-login", "title": "用 MetaMask 登录 Hyperliquid" },
+    { "id": "funding", "title": "资金与网络" },
+    { "id": "first-trade", "title": "完成你的第一单" },
+    { "id": "risk", "title": "风险管理" },
+    { "id": "faq", "title": "常见问题" },
+    { "id": "glossary", "title": "术语表" },
+    { "id": "troubleshooting", "title": "故障排查" },
+    { "id": "further-reading", "title": "延伸学习：DeFi 通识" }
+  ],
+  "sections": [
+    {
+      "id": "quickstart",
+      "title": "快速开始",
+      "type": "steps",
+      "content": [
+        {
+          "kind": "step",
+          "title": "准备 MetaMask 钱包",
+          "items": [
+            "使用 MetaMask（桌面：浏览器扩展；移动端：使用 MetaMask App 内置浏览器访问本项目）",
+            "新手建议新建独立地址，避免与主力资产混用",
+            "备份助记词并妥善离线保存"
+          ]
+        },
+        {
+          "kind": "step",
+          "title": "连接钱包",
+          "items": [
+            "点击页面右上角“连接钱包”或本节按钮",
+            "授权站点访问地址（仅读取公钥，不会窃取资产）"
+          ],
+          "cta": { "label": "去连接钱包", "type": "internal", "target": "WalletTab" }
+        },
+        {
+          "kind": "step",
+          "title": "准备资金与网络",
+          "items": [
+            "Hyperliquid 永续基于其自身结算体系，需保证账户有可用资金",
+            "如需从 CEX 或链上转入，先完成网络与资产准备（见下节）"
+          ]
+        },
+        {
+          "kind": "step",
+          "title": "一站式分析 + 执行",
+          "items": [
+            "在交易面板选择标的（如 BTC、ETH）",
+            "输入仓位大小与杠杆，设置止损/止盈（强烈推荐）",
+            "确认下单，系统自动完成签名与发送"
+          ],
+          "cta": { "label": "打开交易面板", "type": "internal", "target": "TradingDashboardTab" }
+        },
+        {
+          "kind": "callout",
+          "tone": "info",
+          "title": "时间预算",
+          "text": "整个过程一般 15–30 分钟，首次会更慢，后续会很快。"
+        }
+      ]
+    },
+    {
+      "id": "metamask-install",
+      "title": "安装 MetaMask",
+      "type": "content",
+      "content": [
+        { "kind": "paragraph", "text": "本项目仅支持 MetaMask。桌面端请安装浏览器扩展；移动端请在 MetaMask App 内置浏览器中打开本项目以实现连接。" },
+        { "kind": "list", "title": "桌面端（推荐 Chrome/Brave/Edge）", "items": [
+          "前往浏览器的扩展商店搜索并安装 MetaMask",
+          "固定扩展图标，点击创建/导入钱包",
+          "抄写并线下保存助记词，设置强密码"
+        ]},
+        { "kind": "list", "title": "移动端（iOS/Android）", "items": [
+          "在 App Store/Google Play 安装 MetaMask",
+          "打开 MetaMask App，进入内置浏览器",
+          "在内置浏览器中访问本项目网址以完成连接"
+        ]},
+        { "kind": "callout", "tone": "warning", "title": "安全提示", "text": "切勿将助记词/私钥输入到任何网页。本项目不会索取你的助记词/私钥。" }
+      ]
+    },
+    {
+      "id": "connect-site",
+      "title": "用 MetaMask 登录本项目",
+      "type": "content",
+      "content": [
+        { "kind": "paragraph", "text": "我们仅在你授权后读取公开地址与请求签名，不会发起资金转出。" },
+        { "kind": "step", "title": "桌面端", "items": [
+          "打开本项目网站，点击右上角“连接钱包”",
+          "钱包弹窗中选择 MetaMask 并确认连接",
+          "如需签名以验证所有权，按提示完成"
+        ]},
+        { "kind": "step", "title": "移动端", "items": [
+          "打开 MetaMask App 的内置浏览器，访问本项目网址",
+          "点击“连接钱包”并在 MetaMask 内确认",
+          "按提示完成必要的签名"
+        ]},
+        { "kind": "cta", "label": "去连接钱包", "type": "internal", "target": "WalletTab" }
+      ]
+    },
+    {
+      "id": "hyperliquid-login",
+      "title": "用 MetaMask 登录 Hyperliquid",
+      "type": "content",
+      "content": [
+        { "kind": "paragraph", "text": "开始交易前，请先在 Hyperliquid 完成账户注册/连接。" },
+        { "kind": "step", "title": "步骤", "items": [
+          "在桌面浏览器访问 https://app.hyperliquid.xyz 移动端请用 MetaMask App 内置浏览器访问",
+          "点击页面的“Connect Wallet/连接钱包”，选择 MetaMask",
+          "在钱包中确认连接与必要的签名",
+          "首次使用时按页面提示完成注册（如设置用户名等）"
+        ]},
+        { "kind": "callout", "tone": "info", "title": "提示", "text": "完成 Hyperliquid 账户准备后，回到本项目的交易面板即可下单。" }
+      ]
+    },
+    {
+      "id": "funding",
+      "title": "资金与网络",
+      "type": "content",
+      "content": [
+        {
+          "kind": "paragraph",
+          "text": "为了在 Hyperliquid 上进行永续合约交易，你需要在可用账户内有可交易余额。常见路径："
+        },
+        {
+          "kind": "list",
+          "title": "常见资金准备路径",
+          "items": [
+            "从中心化交易所（CEX）提现到你的链上钱包",
+            "使用跨链桥将资产转移至目标网络/账户",
+            "将资产兑换为交易所需的保证金资产（如 USDC）"
+          ]
+        },
+        {
+          "kind": "callout",
+          "tone": "info",
+          "title": "小额起步",
+          "text": "建议从小额开始验证全流程，熟悉之后再逐步加仓。"
+        }
+      ]
+    },
+    {
+      "id": "first-trade",
+      "title": "完成你的第一单",
+      "type": "steps",
+      "content": [
+        {
+          "kind": "step",
+          "title": "选择标的",
+          "items": [
+            "在交易面板选择想交易的永续标的（例如 BTC-PERP）",
+            "查看价格、资金费率、24h 变化等基础信息"
+          ]
+        },
+        {
+          "kind": "step",
+          "title": "设置仓位与杠杆",
+          "items": [
+            "输入下单数量或名义价值，选择杠杆倍数",
+            "系统会实时预估所需保证金与强平价格"
+          ]
+        },
+        {
+          "kind": "step",
+          "title": "配置风控（推荐）",
+          "items": [
+            "设置止损价，限制最大亏损",
+            "设置止盈价，锁定目标收益",
+            "重要：风险参数优先于收益预期"
+          ]
+        },
+        {
+          "kind": "step",
+          "title": "确认与签名",
+          "items": [
+            "确认订单摘要，点击下单",
+            "钱包会弹出签名请求，确认后系统将自动发送"
+          ]
+        },
+        {
+          "kind": "callout",
+          "tone": "success",
+          "title": "恭喜！",
+          "text": "你的第一笔永续交易已提交。可在持仓与订单区查看状态，并随时调整止损/止盈。"
+        }
+      ]
+    },
+    {
+      "id": "risk",
+      "title": "风险管理",
+      "type": "content",
+      "content": [
+        {
+          "kind": "paragraph",
+          "text": "杠杆会放大收益也会放大亏损。请只使用你能承受损失的资金，并严格执行风控。"
+        },
+        {
+          "kind": "list",
+          "title": "核心原则",
+          "items": [
+            "单笔风险不超过可用资金的 1%–2%",
+            "总杠杆敞口可控（避免在高波动时过度加杠杆）",
+            "务必设置并遵守止损，不要“补仓赌反弹”"
+          ]
+        },
+        {
+          "kind": "list",
+          "title": "常见风控工具",
+          "items": [
+            "止损单：价格触发后自动平仓",
+            "止盈单：达到目标收益自动止盈",
+            "减仓：波动上行时逐步减仓，保护已实现收益"
+          ]
+        }
+      ]
+    }
+  ],
+  "faq": [
+    {
+      "q": "为什么需要签名？这会转走我的资产吗？",
+      "a": "链上操作需要钱包对消息/交易进行签名以确认授权。签名本身不会泄露私钥或直接转走资产，请仅在信任的站点与明确的操作场景下签名。"
+    },
+    {
+      "q": "最少需要多少钱开始？",
+      "a": "建议从能够接受损失的小额开始（例如 50–200 美元等值），用于跑通流程并建立风控习惯。"
+    },
+    {
+      "q": "资金费率是什么？",
+      "a": "永续合约通过多空双方互相支付资金费率来锚定现货价格。当费率为正，多头支付空头；为负则空头支付多头。"
+    },
+    {
+      "q": "强平价是怎么算的？",
+      "a": "强平价由标的价格、杠杆、保证金与平台规则共同决定。杠杆越高、保证金越低，强平价越接近当前价。系统会在下单前给出预估。"
+    }
+  ],
+  "glossary": [
+    { "term": "钱包 (Wallet)", "def": "管理私钥与地址的工具，用于签名和发起交易。" },
+    { "term": "助记词 (Seed Phrase)", "def": "用于恢复钱包的词组，必须离线妥善保存。" },
+    { "term": "永续合约 (Perpetual)", "def": "无到期日的合约，通过资金费率维持锚定。" },
+    { "term": "杠杆 (Leverage)", "def": "放大仓位名义价值的倍数，同时放大风险与收益。" },
+    { "term": "保证金 (Margin)", "def": "用于支撑仓位风险的抵押资产。" },
+    { "term": "强平 (Liquidation)", "def": "当保证金不足时平台强制平仓以防进一步亏损。" },
+    { "term": "资金费率 (Funding)", "def": "多空双方定期结算的费用，用于锚定价格。" }
+  ],
+  "troubleshooting": [
+    {
+      "issue": "无法连接钱包 / 无法弹出签名窗口",
+      "fix": [
+        "确认已安装并解锁钱包扩展（MetaMask/Rabby）",
+        "刷新页面或重启浏览器",
+        "检查是否拦截弹窗/脚本（浏览器隐私设置或扩展）"
+      ]
+    },
+    {
+      "issue": "下单失败或长时间 Pending",
+      "fix": [
+        "检查网络状态与费用，必要时稍后重试",
+        "核对账户是否有足够可用余额",
+        "减少杠杆或下单数量后再试"
+      ]
+    },
+    {
+      "issue": "显示余额或持仓不一致",
+      "fix": [
+        "点击刷新，等待数据同步",
+        "跨设备登录时注意缓存延迟",
+        "如仍异常，请与我们联系并提供交易哈希"
+      ]
+    }
+  ],
+  "furtherReading": [
+    {
+      "title": "DeFi 入门：钱包、链与资产",
+      "bullets": [
+        "钱包与地址的本质：私钥即所有权",
+        "主网与二层网络的区别",
+        "如何安全地保管助记词"
+      ]
+    },
+    {
+      "title": "AMM 与流动性基础",
+      "bullets": [
+        "恒定乘积做市 (x*y=k) 的直觉",
+        "滑点与价格冲击",
+        "LP 收益与无常损失"
+      ]
+    },
+    {
+      "title": "借贷与杠杆",
+      "bullets": [
+        "抵押、清算与利率曲线",
+        "杠杆的风险与管理",
+        "为何要分散风险与设置止损"
+      ]
+    }
+  ]
+}
+
+

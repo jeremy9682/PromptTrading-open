@@ -1,0 +1,34 @@
+{
+	"info": {
+		"singularName": "rate-limit-rule",
+		"pluralName": "rate-limit-rules",
+		"displayName": "Rate Limit Rule"
+	},
+	"options": {
+		"draftAndPublish": false
+	},
+	"attributes": {
+		"endpoint": {
+			"type": "string",
+			"required": true,
+			"unique": true,
+			"description": "接口路径或匹配模式"
+		},
+		"limit": {
+			"type": "integer",
+			"required": true,
+			"description": "允许的请求次数"
+		},
+		"windowSeconds": {
+			"type": "integer",
+			"required": true,
+			"description": "时间窗口（秒）"
+		},
+		"identifier": {
+			"type": "enumeration",
+			"enum": ["IP", "userId"],
+			"required": true,
+			"description": "计数标识，按 IP 或 userId 限制"
+		}
+	}
+}

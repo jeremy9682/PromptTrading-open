@@ -1,0 +1,802 @@
+// Prisma schema for PromptTrading
+// Database: PostgreSQL (local, self-hosted, or managed)
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================
+// User Model (Privy Authentication)
+// ============================================
+model User {
+  id            String   @id @default(uuid())
+  privyUserId   String   @unique @map("privy_user_id") // did:privy:xxx
+  walletAddress String   @map("wallet_address") // Primary wallet address
+
+  // Delegation (Privy Delegated Actions)
+  isDelegated       Boolean  @default(false) @map("is_delegated")
+  delegatedAt       DateTime? @map("delegated_at")
+  delegationChainId Int?     @map("delegation_chain_id") // e.g., 137 for Polygon
+
+  // Safe Wallet (Gasless Trading)
+  safeAddress       String?  @map("safe_address") // Safe proxy wallet address
+  safeDeployed      Boolean  @default(false) @map("safe_deployed")
+  safeApprovalsSet  Boolean  @default(false) @map("safe_approvals_set")
+
+  // Auto Trading Settings
+  autoTradeEnabled  Boolean  @default(false) @map("auto_trade_enabled")
+  autoTradeMaxAmount Decimal? @map("auto_trade_max_amount") @db.Decimal(12, 2)
+  autoTradeDailyLimit Decimal? @map("auto_trade_daily_limit") @db.Decimal(12, 2)
+
+  // ========== AI Credits 余额 ==========
+  aiCreditsBalance    Decimal  @default(0) @map("ai_credits_balance") @db.Decimal(12, 6)
+  aiCreditsCurrency   String   @default("USD") @map("ai_credits_currency")
+
+  // ========== Subscription ==========
+  subscriptionTier      String   @default("free") @map("subscription_tier")
+  subscriptionExpiresAt DateTime? @map("subscription_expires_at")
+  subscriptionProvider  String?  @map("subscription_provider")
+
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+  lastLoginAt   DateTime? @map("last_login_at")
+
+  // Relations
+  polymarketWatchlist  PolymarketWatchlistItem[]
+  polymarketTraders    PolymarketTrader[]
+  polymarketAnalysisHistory PolymarketAnalysisHistory[]
+  polymarketApiCredentials PolymarketApiCredential[]
+  autoTradeHistory     AutoTradeHistory[]
+  rechargeOrders       RechargeOrder[]
+  usageRecords         UsageRecord[]
+  subscriptionOrders   SubscriptionOrder[]
+
+  @@index([walletAddress])
+  @@index([isDelegated])
+  @@index([safeAddress])
+  @@index([subscriptionTier])
+  @@map("users")
+}
+
+// ============================================
+// Auto Trade History
+// Records of automated trades executed by the system
+// ============================================
+model AutoTradeHistory {
+  id            String   @id @default(uuid())
+  userId        String   @map("user_id")
+  traderId      String?  @map("trader_id") // Optional: link to specific trader
+
+  // Market Source
+  source        String   @default("POLYMARKET") // "POLYMARKET" | "KALSHI"
+
+  // Event Info
+  eventId       String   @map("event_id")
+  eventTitle    String   @map("event_title")
+  tokenId       String   @map("token_id")
+
+  // Order Details
+  side          String   // 'BUY' | 'SELL'
+  amount        Decimal  @db.Decimal(12, 2)
+  price         Decimal  @db.Decimal(5, 4)
+  orderId       String?  @map("order_id")
+
+  // Status
+  status        String   @default("pending") // 'pending' | 'executed' | 'failed'
+  errorMessage  String?  @map("error_message")
+
+  // Signal Info
+  signalSource  String   @map("signal_source") // 'ai_analysis' | 'manual'
+  signalConfidence Int?  @map("signal_confidence")
+
+  // Timestamps
+  createdAt     DateTime @default(now()) @map("created_at")
+  executedAt    DateTime? @map("executed_at")
+
+  // Relations
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  trader        PolymarketTrader? @relation(fields: [traderId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([traderId])
+  @@index([status])
+  @@index([createdAt])
+  @@map("auto_trade_history")
+}
+
+// ============================================
+// Polymarket Watchlist
+// ============================================
+model PolymarketWatchlistItem {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  eventId   String   @map("event_id") // Market event/condition ID
+
+  // Market Source
+  source    String   @default("POLYMARKET") // "POLYMARKET" | "KALSHI"
+
+  addedAt   DateTime @default(now()) @map("added_at")
+  notes     String?  // Optional user notes
+
+  // Relations
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Constraints
+  @@unique([userId, eventId]) // User can only add same event once
+  @@index([userId])
+  @@map("polymarket_watchlist")
+}
+
+// ============================================
+// Polymarket Trader
+// ============================================
+model PolymarketTrader {
+  id              String   @id @default(uuid())
+  userId          String   @map("user_id")
+
+  // Basic Info
+  name            String
+  color           String   @default("blue") // UI color theme
+
+  // Strategy
+  prompt          String   @db.Text // Custom strategy prompt
+  aiModel         String   @map("ai_model") @default("gpt-4") // AI model to use
+
+  // Capital & Performance
+  capital         Decimal  @default(1000) @db.Decimal(12, 2) // Initial capital in USDC
+  totalValue      Decimal  @default(1000) @map("total_value") @db.Decimal(12, 2)
+  totalPnL        Decimal  @default(0) @map("total_pnl") @db.Decimal(12, 2)
+
+  // Risk Management
+  minConfidence   Int      @default(65) @map("min_confidence") // 50-95
+  maxPosition     Int      @default(30) @map("max_position") // 10-100 (percentage)
+  stopLossPrice   Int      @default(20) @map("stop_loss_price") // 5-50
+  takeProfitPrice Int      @default(80) @map("take_profit_price") // 50-95
+
+  // Analysis Weights
+  newsWeight      Int      @default(40) @map("news_weight") // 0-100
+  dataWeight      Int      @default(35) @map("data_weight") // 0-100
+  sentimentWeight Int      @default(25) @map("sentiment_weight") // 0-100
+
+  // Analysis Configuration
+  analysisInterval Int     @default(15) @map("analysis_interval") // Minutes between analysis
+
+  // Data Sources (JSON for flexibility)
+  dataSources     Json     @default("{\"marketDepth\":true,\"historyData\":true,\"relatedEvents\":false,\"technicalIndicators\":false,\"participantBehavior\":false,\"userAccount\":false}") @map("data_sources")
+
+  // Status
+  isActive        Boolean  @default(false) @map("is_active")
+
+  // Timestamps
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  eventAssignments PolymarketTraderEvent[]
+  analysisHistory PolymarketAnalysisHistory[]
+  tradeHistory    AutoTradeHistory[]
+
+  @@index([userId])
+  @@index([isActive])
+  @@map("polymarket_traders")
+}
+
+// ============================================
+// Polymarket Trader <-> Event Assignment
+// Many-to-Many relationship
+// ============================================
+model PolymarketTraderEvent {
+  id        String   @id @default(uuid())
+  traderId  String   @map("trader_id")
+  eventId   String   @map("event_id") // Market event/condition ID
+
+  // Market Source
+  source    String   @default("POLYMARKET") // "POLYMARKET" | "KALSHI"
+
+  addedAt   DateTime @default(now()) @map("added_at")
+
+  // Relations
+  trader    PolymarketTrader @relation(fields: [traderId], references: [id], onDelete: Cascade)
+
+  // Constraints
+  @@unique([traderId, eventId])
+  @@index([traderId])
+  @@index([eventId])
+  @@map("polymarket_trader_events")
+}
+
+// ============================================
+// Polymarket Analysis History
+// Stores AI analysis results for each trader
+// Max 20 records per user (cleanup on insert)
+// ============================================
+model PolymarketAnalysisHistory {
+  id          String   @id @default(uuid())
+  traderId    String   @map("trader_id")
+  userId      String   @map("user_id")
+
+  // Market Source
+  source      String   @default("POLYMARKET") // "POLYMARKET" | "KALSHI"
+
+  // Event Info (snapshot at analysis time)
+  eventId     String   @map("event_id")
+  eventTitle  String   @map("event_title")
+
+  // Analysis Configuration
+  aiModel     String   @map("ai_model")
+
+  // Market Data at Analysis Time
+  yesPrice    Decimal  @map("yes_price") @db.Decimal(5, 4)
+  noPrice     Decimal  @map("no_price") @db.Decimal(5, 4)
+  volume      Decimal  @db.Decimal(15, 2)
+
+  // AI Analysis Result (JSON for flexibility)
+  analysisResult Json   @map("analysis_result")
+
+  // Decision
+  action      String   // 'buy_yes', 'buy_no', 'sell_yes', 'sell_no', 'hold'
+  confidence  Int      // 0-100
+  reasoning   String   @db.Text
+
+  // Execution Status
+  executed    Boolean  @default(false) // Whether trade was actually executed
+  executedAt  DateTime? @map("executed_at") // When trade was executed
+
+  // Timestamps
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  // Relations
+  trader      PolymarketTrader @relation(fields: [traderId], references: [id], onDelete: Cascade)
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([traderId])
+  @@index([userId])
+  @@index([createdAt])
+  @@map("polymarket_analysis_history")
+}
+
+// ============================================
+// Polymarket API Credentials
+// Stores encrypted CLOB API keys for users
+// ============================================
+model PolymarketApiCredential {
+  id            String   @id @default(uuid())
+  userId        String   @map("user_id")
+  walletAddress String   @map("wallet_address")
+
+  // Encrypted API credentials
+  apiKey        String   @map("api_key")        // Encrypted
+  apiSecret     String   @map("api_secret")     // Encrypted
+  passphrase    String   @map("passphrase")     // Encrypted
+
+  // Timestamps
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Constraints - one credential per wallet per user
+  @@unique([userId, walletAddress])
+  @@index([userId])
+  @@map("polymarket_api_credentials")
+}
+
+// ============================================
+// AI Credits Recharge Order
+// Records of user recharge transactions
+// ============================================
+model RechargeOrder {
+  id              String   @id @default(uuid())
+  userId          String   @map("user_id")
+
+  // 订单信息
+  orderNo         String   @unique @map("order_no")  // 唯一订单号: RCH-timestamp-random
+  amount          Decimal  @db.Decimal(12, 2)        // 充值金额 (USDC)
+  creditsAmount   Decimal  @map("credits_amount") @db.Decimal(12, 6)  // 获得的 AI Credits (1:1)
+
+  // 支付信息
+  paymentChain    String   @default("arbitrum") @map("payment_chain")  // arbitrum | polygon
+  paymentToken    String   @default("USDC") @map("payment_token")
+  payerAddress    String   @map("payer_address")     // 付款钱包地址
+  receiverAddress String   @map("receiver_address")  // 平台收款地址
+
+  // 链上交易
+  txHash          String?  @unique @map("tx_hash")   // 交易哈希 (unique防止重复)
+  blockNumber     Int?     @map("block_number")
+  confirmations   Int      @default(0)               // 确认数
+
+  // 状态: pending | confirming | completed | failed | expired
+  status          String   @default("pending")
+  errorMessage    String?  @map("error_message")
+
+  // 时间戳
+  createdAt       DateTime @default(now()) @map("created_at")
+  expiresAt       DateTime @map("expires_at")        // 订单过期时间 (30分钟)
+  confirmedAt     DateTime? @map("confirmed_at")
+  completedAt     DateTime? @map("completed_at")
+
+  // 关联
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([status])
+  @@index([orderNo])
+  @@index([createdAt])
+  @@map("recharge_orders")
+}
+
+// ============================================
+// Subscription Order
+// Records of Pro subscription payments
+// ============================================
+model SubscriptionOrder {
+  id                String   @id @default(uuid())
+  userId            String   @map("user_id")
+
+  // Order info
+  orderNo           String   @unique @map("order_no")  // SUB-timestamp-random
+  amount            Decimal  @db.Decimal(12, 2)         // Payment amount (USD)
+  currency          String   @default("USD")
+
+  // Provider info
+  provider          String   // 'coinbase' | 'moonpay'
+  providerChargeId  String?  @map("provider_charge_id") // Charge ID from provider
+  providerCode      String?  @map("provider_code")      // Provider-specific code
+  hostedUrl         String?  @map("hosted_url")         // Hosted checkout URL
+
+  // Subscription period
+  periodStart       DateTime? @map("period_start")
+  periodEnd         DateTime? @map("period_end")
+
+  // Status: pending | completed | failed | expired
+  status            String   @default("pending")
+
+  // Webhook idempotency
+  webhookEventId    String?  @unique @map("webhook_event_id")
+  webhookPayload    Json?    @map("webhook_payload")
+
+  // Timestamps
+  createdAt         DateTime @default(now()) @map("created_at")
+  expiresAt         DateTime @map("expires_at")         // Order expiry (30 min)
+  completedAt       DateTime? @map("completed_at")
+
+  // Relations
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([status])
+  @@index([providerChargeId])
+  @@index([orderNo])
+  @@index([createdAt])
+  @@map("subscription_orders")
+}
+
+// ============================================
+// AI Credits Usage Record
+// Records of AI service consumption
+// ============================================
+model UsageRecord {
+  id              String   @id @default(uuid())
+  userId          String   @map("user_id")
+
+  // 使用类型: ai_analysis | auto_trade_analysis | ...
+  type            String
+  description     String?  // 可读描述
+
+  // AI 调用信息
+  aiModel         String?  @map("ai_model")          // 模型 ID
+  aiModelName     String?  @map("ai_model_name")     // OpenRouter 模型全名
+  promptTokens    Int?     @map("prompt_tokens")
+  completionTokens Int?    @map("completion_tokens")
+
+  // 费用信息 (USD)
+  openRouterCost  Decimal  @map("openrouter_cost") @db.Decimal(12, 8)   // OpenRouter 原始成本
+  platformMarkup  Decimal  @map("platform_markup") @db.Decimal(12, 8)  // 平台加成 (20%)
+  totalCost       Decimal  @map("total_cost") @db.Decimal(12, 8)       // 总扣费
+
+  // 余额快照
+  balanceBefore   Decimal  @map("balance_before") @db.Decimal(12, 6)
+  balanceAfter    Decimal  @map("balance_after") @db.Decimal(12, 6)
+
+  // 时间戳
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  // 关联
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([type])
+  @@index([createdAt])
+  @@map("usage_records")
+}
+
+// ============================================
+// Admin Action Log
+// Records all admin sensitive operations
+// ============================================
+model AdminActionLog {
+  id          String   @id @default(uuid())
+  adminId     String   @map("admin_id")       // 管理员 Privy User ID
+  adminEmail  String   @map("admin_email")    // 管理员邮箱
+
+  // 操作信息
+  action      String   // manual_confirm | add_credits | refund | ...
+  targetType  String   @map("target_type")    // order | user
+  targetId    String   @map("target_id")
+
+  // 操作详情
+  details     Json     // 操作前后的数据快照
+  reason      String?  // 操作原因
+
+  // IP & 时间
+  ipAddress   String?  @map("ip_address")
+  userAgent   String?  @map("user_agent")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@index([adminId])
+  @@index([action])
+  @@index([targetId])
+  @@index([createdAt])
+  @@map("admin_action_logs")
+}
+
+// ============================================
+// Paper Trader (模拟盘 AI Trader)
+// 与 PolymarketTrader 类似，但完全独立
+// ============================================
+model PaperTrader {
+  id              String   @id @default(uuid())
+  userId          String   @map("user_id")
+
+  // Basic Info
+  name            String
+  color           String   @default("blue")
+
+  // Strategy
+  prompt          String   @db.Text
+  aiModel         String   @map("ai_model") @default("deepseek/deepseek-chat")
+
+  // Capital & Performance
+  capital         Decimal  @default(1000) @db.Decimal(12, 2)
+  totalValue      Decimal  @default(1000) @map("total_value") @db.Decimal(12, 2)
+  totalPnL        Decimal  @default(0) @map("total_pnl") @db.Decimal(12, 2)
+
+  // Risk Management
+  minConfidence   Int      @default(65) @map("min_confidence")
+  maxPosition     Int      @default(30) @map("max_position")
+  stopLossPrice   Int      @default(20) @map("stop_loss_price")
+  takeProfitPrice Int      @default(80) @map("take_profit_price")
+
+  // Analysis Weights
+  newsWeight      Int      @default(40) @map("news_weight")
+  dataWeight      Int      @default(35) @map("data_weight")
+  sentimentWeight Int      @default(25) @map("sentiment_weight")
+
+  // Analysis Configuration
+  analysisInterval Int     @default(15) @map("analysis_interval")
+  dataSources     Json     @default("{\"marketDepth\":true,\"historyData\":true,\"relatedEvents\":false,\"technicalIndicators\":false,\"participantBehavior\":false,\"userAccount\":false}") @map("data_sources")
+
+  // Status
+  isActive        Boolean  @default(false) @map("is_active")
+
+  // Timestamps
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  eventAssignments PaperTraderEvent[]
+  analysisHistory  PaperAnalysisHistory[]
+  trades           PaperTrade[]  // 关联到该 Trader 执行的模拟交易
+
+  @@index([userId])
+  @@index([isActive])
+  @@map("paper_traders")
+}
+
+// ============================================
+// Paper Trader <-> Event Assignment
+// ============================================
+model PaperTraderEvent {
+  id        String   @id @default(uuid())
+  traderId  String   @map("trader_id")
+  eventId   String   @map("event_id")
+
+  // Market Source
+  source    String   @default("POLYMARKET") // "POLYMARKET" | "KALSHI"
+
+  addedAt   DateTime @default(now()) @map("added_at")
+
+  trader    PaperTrader @relation(fields: [traderId], references: [id], onDelete: Cascade)
+
+  @@unique([traderId, eventId])
+  @@index([traderId])
+  @@index([eventId])
+  @@map("paper_trader_events")
+}
+
+// ============================================
+// Paper Analysis History (模拟盘分析历史)
+// ============================================
+model PaperAnalysisHistory {
+  id          String   @id @default(uuid())
+  traderId    String   @map("trader_id")
+  userId      String   @map("user_id")
+
+  // Market Source
+  source      String   @default("POLYMARKET") // "POLYMARKET" | "KALSHI"
+
+  // Event Info
+  eventId     String   @map("event_id")
+  eventTitle  String   @map("event_title")
+
+  // Analysis Configuration
+  aiModel     String   @map("ai_model")
+
+  // Market Data at Analysis Time
+  yesPrice    Decimal  @map("yes_price") @db.Decimal(5, 4)
+  noPrice     Decimal  @map("no_price") @db.Decimal(5, 4)
+  volume      Decimal  @db.Decimal(15, 2)
+
+  // AI Analysis Result
+  analysisResult Json   @map("analysis_result")
+
+  // Decision
+  action      String
+  confidence  Int
+  reasoning   String   @db.Text
+
+  // Execution Status
+  executed    Boolean  @default(false)
+  executedAt  DateTime? @map("executed_at")
+
+  // Timestamps
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  // Relations
+  trader      PaperTrader @relation(fields: [traderId], references: [id], onDelete: Cascade)
+
+  @@index([traderId])
+  @@index([userId])
+  @@index([createdAt])
+  @@map("paper_analysis_history")
+}
+
+// ============================================
+// Paper Trading Account (模拟盘账户)
+// 每个用户一个模拟账户
+// ============================================
+model PaperTradingAccount {
+  id              String   @id @default(uuid())
+  userId          String   @unique @map("user_id")
+
+  // 资金
+  balance         Decimal  @default(10000) @db.Decimal(12, 2)  // 当前余额
+  initialBalance  Decimal  @default(10000) @map("initial_balance") @db.Decimal(12, 2)
+
+  // 时间戳
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+  lastResetAt     DateTime? @map("last_reset_at")
+
+  // Relations
+  positions       PaperPosition[]
+  trades          PaperTrade[]
+
+  @@index([userId])
+  @@map("paper_trading_accounts")
+}
+
+// ============================================
+// Paper Position (模拟持仓)
+// ============================================
+model PaperPosition {
+  id              String   @id @default(uuid())
+  accountId       String   @map("account_id")
+
+  // Market Source
+  source          String   @default("POLYMARKET") // "POLYMARKET" | "KALSHI"
+
+  // 事件信息
+  eventId         String   @map("event_id")
+  eventTitle      String   @map("event_title")
+
+  // 持仓信息
+  side            String   // 'YES' | 'NO'
+  size            Decimal  @db.Decimal(12, 4)  // 持有的 shares 数量
+  entryPrice      Decimal  @map("entry_price") @db.Decimal(5, 4)  // 平均成本价
+  totalCost       Decimal  @map("total_cost") @db.Decimal(12, 2)  // 总成本
+
+  // 时间戳
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  account         PaperTradingAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
+
+  @@unique([accountId, eventId, side])  // 同一账户同一事件同一方向只能有一个持仓
+  @@index([accountId])
+  @@index([eventId])
+  @@map("paper_positions")
+}
+
+// ============================================
+// Paper Trade (模拟交易记录)
+// ============================================
+model PaperTrade {
+  id              String   @id @default(uuid())
+  accountId       String   @map("account_id")
+  traderId        String?  @map("trader_id")  // 可选：关联到执行交易的 PaperTrader
+
+  // Market Source
+  source          String   @default("POLYMARKET") // "POLYMARKET" | "KALSHI"
+
+  // 事件信息
+  eventId         String   @map("event_id")
+  eventTitle      String   @map("event_title")
+
+  // 交易信息
+  action          String   // 'BUY' | 'SELL'
+  side            String   // 'YES' | 'NO'
+  size            Decimal  @db.Decimal(12, 4)
+  price           Decimal  @db.Decimal(5, 4)
+  amount          Decimal  @db.Decimal(12, 2)  // 交易金额
+
+  // 盈亏 (卖出时记录)
+  pnl             Decimal? @db.Decimal(12, 2)
+
+  // AI 分析来源 (可选)
+  fromAiAnalysis  Boolean  @default(false) @map("from_ai_analysis")
+  aiConfidence    Int?     @map("ai_confidence")
+
+  // 时间戳
+  executedAt      DateTime @default(now()) @map("executed_at")
+
+  // Relations
+  account         PaperTradingAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  trader          PaperTrader? @relation(fields: [traderId], references: [id], onDelete: SetNull)
+
+  @@index([accountId])
+  @@index([traderId])
+  @@index([eventId])
+  @@index([executedAt])
+  @@map("paper_trades")
+}
+
+// ============================================
+// Daily Finance Summary
+// Aggregated financial data by day
+// ============================================
+model DailyFinanceSummary {
+  id            String   @id @default(uuid())
+  date          DateTime @unique @db.Date
+
+  // 充值
+  rechargeCount Int      @default(0) @map("recharge_count")
+  rechargeAmount Decimal @default(0) @map("recharge_amount") @db.Decimal(12, 2)
+
+  // 消费
+  usageCount    Int      @default(0) @map("usage_count")
+  usageRevenue  Decimal  @default(0) @map("usage_revenue") @db.Decimal(12, 6)
+
+  // 成本
+  openRouterCost Decimal @default(0) @map("openrouter_cost") @db.Decimal(12, 6)
+
+  // 利润
+  grossProfit   Decimal  @default(0) @map("gross_profit") @db.Decimal(12, 6)
+
+  // 用户统计
+  newUsers      Int      @default(0) @map("new_users")
+  activeUsers   Int      @default(0) @map("active_users")
+
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  @@index([date])
+  @@map("daily_finance_summary")
+}
+
+// ============================================
+// Market Event (Semantic Search)
+// Cached market events from Polymarket/Kalshi with embeddings
+// ============================================
+model MarketEvent {
+  id              String   @id @default(uuid())
+  externalId      String   @unique @map("external_id")  // Polymarket/Kalshi event ID
+  source          String   // "POLYMARKET" | "KALSHI"
+
+  // Event Content
+  title           String   @db.VarChar(500)
+  titleNormalized String   @map("title_normalized") @db.VarChar(500)  // lowercase, no punctuation
+  description     String?  @db.Text
+  searchText      String   @map("search_text") @db.Text  // title + description for full-text search
+
+  // Embedding vector - handled via raw SQL (pgvector)
+  // embedding      Unsupported("vector(1536)")
+
+  // Classification
+  category        String?  @db.VarChar(50)  // politics, crypto, sports, etc.
+
+  // Market Status
+  status          String   @default("ACTIVE")  // ACTIVE | CLOSED | RESOLVED
+
+  // Market Data
+  yesPrice        Decimal? @map("yes_price") @db.Decimal(5, 4)
+  noPrice         Decimal? @map("no_price") @db.Decimal(5, 4)
+  volume          Decimal? @db.Decimal(18, 2)
+  liquidity       Decimal? @db.Decimal(18, 2)
+
+  // Time Info
+  openTime        DateTime? @map("open_time")  // Event creation/start time from source API
+  endDate         DateTime? @map("end_date")
+  url             String?  @db.VarChar(500)
+
+  // Metadata (flexible JSON for source-specific data)
+  metadata        Json?
+
+  // Sync & Timestamps
+  embeddingGeneratedAt DateTime? @map("embedding_generated_at")
+  lastSyncedAt    DateTime @default(now()) @map("last_synced_at")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  @@index([source])
+  @@index([status])
+  @@index([category])
+  @@index([status, source, category])
+  @@index([status, source])
+  @@index([status, category])
+  @@index([volume])
+  @@index([openTime])
+  @@index([endDate])
+  @@index([createdAt])
+  @@index([lastSyncedAt])
+  @@map("market_events")
+}
+
+// ============================================
+// Search Log (Analytics)
+// Records search queries for analysis and optimization
+// ============================================
+model SearchLog {
+  id              String   @id @default(uuid())
+  userId          String?  @map("user_id")  // Optional: logged in user
+
+  // Input
+  inputText       String   @map("input_text") @db.Text
+  inputLength     Int      @map("input_length")
+
+  // Query Understanding Result
+  eventsDetected  Int      @map("events_detected")  // Number of prediction events found
+  queryData       Json?    @map("query_data")  // Parsed query understanding result
+
+  // Results
+  resultsReturned Int      @map("results_returned")
+  topResultId     String?  @map("top_result_id")  // ID of first result
+
+  // User Interaction
+  clickedEventId  String?  @map("clicked_event_id")  // Event user clicked on
+
+  // Performance
+  latencyMs       Int      @map("latency_ms")
+  stageLatencies  Json?    @map("stage_latencies")  // Breakdown by stage
+
+  // Context
+  source          String   @default("web")  // "web" | "extension" | "api"
+  userAgent       String?  @map("user_agent")
+
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  @@index([userId])
+  @@index([eventsDetected])
+  @@index([latencyMs])
+  @@index([source])
+  @@index([createdAt])
+  @@map("search_logs")
+}
